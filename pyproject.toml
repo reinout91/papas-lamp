@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "build123d-projects"
+version = "0.1.0"
+description = "random cad projects"
+authors = ["Reinout Holtrup <reinout91@gmail.com>"]
+license = "gpl3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.10.12"
+cadquery = "^2.4.0"
+build123d = "^0.4.0"
+ocp-vscode = "^2.1.1"
+# Git dependencies
+duckdb = "^0.10.0"
+pyarrow = "^15.0.0"
+
+[tool.poetry.group.dev.dependencies]
+cq-warehouse = {git = "https://github.com/gumyr/cq_warehouse.git"}
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

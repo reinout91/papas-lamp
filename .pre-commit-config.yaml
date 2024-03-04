@@ -1,0 +1,42 @@
+repos:
+- repo: local
+  hooks:
+    - id: autoflake
+      name: autoflake
+      entry: poetry run autoflake
+      types: [python]
+      language: system
+
+    - id: black
+      name: black
+      language: system
+      types: [python]
+      entry: poetry run black
+
+    - id: isort
+      name: isort
+      language: system
+      types: [python]
+      entry: poetry run isort
+
+    - id: mypy
+      name: mypy
+      language: system
+      files: ^(src|test)/
+      types: [python]
+      entry: poetry run mypy
+
+    - id: bandit
+      name: bandit
+      entry: poetry run bandit -c pyproject.toml
+      types: [python]
+      language: system
+
+    - id: safety
+      name: safety
+      # HOTFIX(04-01-2024): poetry.lock from poetry >=1.5.0 is not yet supported by safety
+      # https://github.com/pyupio/safety/issues/479
+      entry: bash -c "poetry run pip freeze | poetry run safety check --stdin"
+      language: system
+      types: [python]
+      pass_filenames: false
