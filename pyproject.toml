@@ -7,7 +7,7 @@ license = "gpl3"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.10.12"
+python = "3.11.0"
 cadquery = "^2.4.0"
 build123d = { git = "https://github.com/gumyr/build123d.git", branch = "dev" }
 ocp-vscode = "^2.3.3"

@@ -9,20 +9,20 @@ Hij wil:
 
 import copy
 from typing import Union
+
+import build123d
 from build123d import *
+from build123d.topology import tuplify
 from ocp_vscode import *
 
 set_port(3939)
-import build123d
-from build123d.topology import Solid, tuplify
 
 print(build123d.__version__)
 
 
 class HelixShape(BasePartObject):
-'''Dit gebruiken we voor het maken van schroefdraad in het midden van de bloem'''
+    '''Dit gebruiken we voor het maken van schroefdraad in het midden van de bloem'''
     # _applies_to = [BuildPart._tag]
-
     def __init__(
         self,
         height: float,
