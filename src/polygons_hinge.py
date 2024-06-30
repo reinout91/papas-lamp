@@ -21,11 +21,7 @@ print(build123d.__version__)
 
 
 class HelixShape(BasePartObject):
-<<<<<<< HEAD
     '''Dit gebruiken we voor het maken van schroefdraad in het midden van de bloem'''
-=======
-'''Dit gebruiken we voor het maken van schroefdraad in het midden van de bloem.'''
->>>>>>> ca79ef1ebe65b52fece57fdfdd50b0981f59c5e6
     # _applies_to = [BuildPart._tag]
     def __init__(
         self,
