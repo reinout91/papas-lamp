@@ -20,7 +20,7 @@ print(build123d.__version__)
 
 
 class HelixShape(BasePartObject):
-'''Dit gebruiken we voor het maken van schroefdraad in het midden van de bloem'''
+'''Dit gebruiken we voor het maken van schroefdraad in het midden van de bloem.'''
     # _applies_to = [BuildPart._tag]
 
     def __init__(
