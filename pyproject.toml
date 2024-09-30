@@ -6,7 +6,7 @@ authors = ["Meermiri <miriamvanderhoek@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11.9"
 cadquery = "^2.4.0"
 ocp-vscode = "^2.3.3"
 cadquery-ocp = "^7.7.0"
