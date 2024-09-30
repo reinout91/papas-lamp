@@ -1,30 +1,20 @@
 [tool.poetry]
-name = "build123d-projects"
+name = "papas-lamp"
 version = "0.1.0"
-description = "random cad projects"
-authors = ["Reinout Holtrup <reinout91@gmail.com>"]
-license = "gpl3"
+description = ""
+authors = ["Meermiri <miriamvanderhoek@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.10.12"
+python = "^3.12"
 cadquery = "^2.4.0"
-build123d = { git = "https://github.com/gumyr/build123d.git", branch = "dev" }
 ocp-vscode = "^2.3.3"
+cadquery-ocp = "^7.7.0"
+build123d = "^0.5.0"
 
-[tool.poetry.group.dev.dependencies]
-cq-warehouse = {git = "https://github.com/gumyr/cq_warehouse.git"}
+[tool.poetry.scripts]
+papas-lamp = 'papas-lamp:main'
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.ruff.lint.flake8-annotations]
-allow-star-arg-any = true
-
-[tool.ruff.lint]
-# 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
-select = ["E4", "E7", "E9", "F", "B"]
-
-# 2. Avoid enforcing line-length violations (`E501`)
-ignore = ["F403","F405"]
+requires = [ "setuptools" ]
+build-backend = "setuptools.build_meta"

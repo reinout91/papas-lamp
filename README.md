@@ -1,2 +1,3 @@
-Vet:
-https://github.com/yeicor-3d/bike-stem-mount?tab=readme-ov-file
+nix-shell -p niv
+niv init
+niv add nix-community/poetry2nix
