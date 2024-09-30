@@ -1,24 +1,6 @@
 repos:
 - repo: local
   hooks:
-    - id: autoflake
-      name: autoflake
-      entry: poetry run autoflake
-      types: [python]
-      language: system
-
-    - id: black
-      name: black
-      language: system
-      types: [python]
-      entry: poetry run black
-
-    - id: isort
-      name: isort
-      language: system
-      types: [python]
-      entry: poetry run isort
-
     - id: mypy
       name: mypy
       language: system
@@ -32,11 +14,19 @@ repos:
       types: [python]
       language: system
 
-    - id: safety
-      name: safety
-      # HOTFIX(04-01-2024): poetry.lock from poetry >=1.5.0 is not yet supported by safety
-      # https://github.com/pyupio/safety/issues/479
-      entry: bash -c "poetry run pip freeze | poetry run safety check --stdin"
-      language: system
-      types: [python]
-      pass_filenames: false
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.5.7
+  hooks:
+    - id: ruff
+      args: [ --fix ]
+    - id: ruff-format
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.6.0
+  hooks:
+    - id: check-ast
+    - id: check-json
+    - id: check-toml
+    - id: check-yaml
+    - id: detect-private-key
+    - id: trailing-whitespace
