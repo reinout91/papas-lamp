@@ -43,6 +43,10 @@ class HelixShape(BasePartObject):
                 l1 = Helix(pitch = pitch, height = height, radius = radius)
             with BuildSketch(Plane(origin=l1 @ 0, z_dir=l1 % 0)):
                 Circle(threadradius)
+            with Locations(l1 @ 0):
+                Sphere(threadradius)
+            with Locations(l1 @ 1):
+                Sphere(threadradius)
             sweep()
 
         solid = p.part.solid()
@@ -51,13 +55,13 @@ class HelixShape(BasePartObject):
             part=solid, rotation=rotation, align=tuplify(align, 3), mode=mode
         )
 
+tt=0.5
 
 with BuildPart(Plane.XY) as regular_polygon_platform:
     '''De bovenkant van de lamp is in vorm van een polygon.
     Later is dit uitgebreid met scharnieren en een hulst om de binnenste koker in te draaien'''
     g = 10
     n_sides = 7
-    tt=0.5
 
     with BuildSketch():
         RegularPolygon(radius=g, side_count=n_sides, major_radius=False)
@@ -88,12 +92,12 @@ with BuildPart(Plane.XY) as regular_polygon_platform:
 
 with BuildPart() as pinpart:
     '''Dit zijn de armen van de scharnieren'''
-    (L, H, B) = (2, 10, 2)
+    (L, H, B) = (1.5, 10, 1.5)
     pts = [
-        (-2, -2),
-        (B, -2),
+        (-L, -L),
+        (B, -L),
         (B, H),
-        (-2, H + 2),
+        (-L, H + L),
     ]
 
     with BuildSketch(Plane.XY):
@@ -101,7 +105,7 @@ with BuildPart() as pinpart:
             t = Polyline(*pts, close=True)
 
         make_face()
-    extrude(amount=0.5, both=True)
+    extrude(amount=0.4, both=True)
     Cylinder(0.9, 3, 360, (0, 0, 0), Align.CENTER)
 
     RevoluteJoint(label = "j1", axis=Axis.Z)
@@ -109,6 +113,18 @@ with BuildPart() as pinpart:
 lever_assembly = Compound(label="lever", children=[pinpart.part])
 
 lever_references = [copy.copy(lever_assembly) for loc in pl.locations]
+
+with BuildPart() as Inner_Tube:
+    ''' Make an inner tube'''
+    with Locations(Location((0,0,tt),(0,0,0))):
+        Cylinder(3.6,10,align=(Align.CENTER, Align.CENTER, Align.MIN))
+        Hole(3.2,30)
+        HelixShape(height = 10, radius = 3.6, pitch = 2.5,
+                align=(Align.CENTER,
+                        Align.CENTER,
+                        Align.MIN),
+                threadradius=0.3,
+                mode = Mode.ADD)
 
 
 '''Hier wordt de verbindingen gedefineerd'''
@@ -119,7 +135,6 @@ for c in range(len(pl.locations)):
     revojoint.connect_to(lever_joint, angle=30)
 
 
-
 ''' visualisatie'''
 #Delete the original parts, only the copied instances remain,.
 del(pinpart)
@@ -127,5 +142,6 @@ del(lever_assembly)
 lever_references[0].color = Color("red")
 lever_references[1].color = Color("blue")
 lever_references[2].color = Color("green")
+# Inner_Tube.color=Color("red")
 
 show_all(reset_camera=Camera.KEEP)

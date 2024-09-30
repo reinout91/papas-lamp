@@ -50,12 +50,17 @@ with BuildPart() as pinpart:
 hinge_base.part.joints["hinge_base_rigid"].connect_to(pinpart.part.joints["pinpart_hinge_joint"],
                                                       angle=180) #code base, why the inverse?
 '''
+with BuildPart() as testwedgde:
+    Wedge(0.1, 1, 1, 0.3, 0, 2, 5)
+
+'''
 class HelixShape(BasePartObject):
 
     # _applies_to = [BuildPart._tag]
 
     def __init__(
         self,
+        heigth: float,
         length: float,
         radius: float,
         threadradius: float,
@@ -104,7 +109,7 @@ with BuildPart() as Outer_Tube:
 
         # with Locations((0,0,30/2)):
         #     Cylinder(5,30)
-        #     Hole(4.8)
+        #     Hole(4.8)'''
 
 
 
