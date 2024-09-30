@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "build123d-projects"
+name = "papaslamp"
 version = "0.1.0"
 description = "random cad projects"
 authors = ["Reinout Holtrup <reinout91@gmail.com>"]
@@ -7,17 +7,18 @@ license = "gpl3"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.11.0"
+python = "3.11.9"
 cadquery = "^2.4.0"
-build123d = { git = "https://github.com/gumyr/build123d.git", branch = "dev" }
 ocp-vscode = "^2.3.3"
+cadquery-ocp = "^7.7.0"
+build123d = "^0.5.0"
 
 [tool.poetry.group.dev.dependencies]
 cq-warehouse = {git = "https://github.com/gumyr/cq_warehouse.git"}
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [tool.ruff.lint.flake8-annotations]
 allow-star-arg-any = true
