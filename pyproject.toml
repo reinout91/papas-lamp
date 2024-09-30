@@ -16,5 +16,15 @@ build123d = "^0.5.0"
 papas-lamp = 'papas-lamp:main'
 
 [build-system]
-requires = [ "setuptools" ]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.lint]
+# 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
+select = ["E4", "E7", "E9", "F", "B"]
+
+# 2. Avoid enforcing line-length violations (`E501`)
+ignore = ["F403","F405"]
