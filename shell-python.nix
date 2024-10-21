@@ -14,7 +14,6 @@ let
     # gccStdenvNoLibs
     # libcxxStdenv
     # gccMultiStdenv
-    # gcc49Stdenv
   ] ++ extraBuildInputs;
 
   lib-path = with pkgs; lib.makeLibraryPath buildInputs;
@@ -47,10 +46,9 @@ let
       pkgs.gccStdenvNoLibs
       pkgs.libcxxStdenv
       pkgs.gccMultiStdenv
-      pkgs.gcc49Stdenv
   ] ++ extraBuildInputs;
 
-  GREETING = "Entering build123d development shell!";
+  GREETING = "Entering papas lamp development shell!";
 
   shellHook = ''
     # Allow the use of wheels.
@@ -64,7 +62,7 @@ let
     LD_LIBRARY_PATH=lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
 
     # Setup the virtual environment if it doesn't already exist.
-    VENV=shell-build123d
+    VENV=shell-papas-lamp
 
     if test ! -d $VENV; then
       virtualenv $VENV
@@ -73,7 +71,7 @@ let
     source ./$VENV/bin/activate
     export PYTHONPATH=$PYTHONPATH:`pwd`/$VENV/${myPython.sitePackages}/
     pip install --upgrade pip
-    pip install build123d ocp-vscode cadquery
+    pip install build123d ocp-vscode cadquery numpy
     echo $GREETING | cowsay | lolcat
     '';
   };
