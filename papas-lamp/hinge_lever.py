@@ -25,7 +25,7 @@ hole_radius = 2 * MM
 macc = (Align.MAX, Align.CENTER, Align.CENTER)
 micc = (Align.MIN, Align.CENTER, Align.CENTER)
 
-with BuildPart() as first:
+with BuildPart() as t_hinge:
     with Locations((-10, 0, 0)):
         bla = Box(6, 50, H, align = macc)
         Box(14, 6, H2, align = micc)
@@ -37,12 +37,12 @@ with BuildPart() as first:
         Cylinder(pin_radius, H, align=(Align.CENTER, Align.MAX, Align.CENTER))
 
     Hole(hole_radius)
-    max_fillet = first.part.max_fillet(
-        first.edges().filter_by(Axis.Z), tolerance=0.2, max_iterations=20
+    max_fillet = t_hinge.part.max_fillet(
+        t_hinge.edges().filter_by(Axis.Z), tolerance=0.2, max_iterations=20
     )
-    fillet(objects=first.edges().filter_by(Axis.Z), radius=max_fillet)
+    fillet(objects=t_hinge.edges().filter_by(Axis.Z), radius=max_fillet)
 
-with BuildPart() as second:
+with BuildPart() as shackle:
     with Locations((-2, 0, 0)):
         bla = Box(10, W1, H, align = micc)
     with Locations(bla.faces().filter_by(Axis.X)[-1].center_location.position):
@@ -61,22 +61,22 @@ with BuildPart() as second:
         bla.faces().filter_by(Axis.X)[-1].center_location.position + (-1, 0, 0)
     ):
         Cylinder(pin_radius, H, align = macc)
-    max_fillet = second.part.max_fillet(
-        second.edges().filter_by(Axis.Z), tolerance = 2, max_iterations = 20
+    max_fillet = shackle.part.max_fillet(
+        shackle.edges().filter_by(Axis.Z), tolerance = 2, max_iterations = 20
     )
-    fillet(objects=second.edges().filter_by(Axis.Z), radius=max_fillet)
+    fillet(objects=shackle.edges().filter_by(Axis.Z), radius=max_fillet)
 
-j1 = RevoluteJoint(label="first_hole", to_part=first.part)
+j1 = RevoluteJoint(label="t_hinge_hole", to_part=t_hinge.part)
 j2 = RigidJoint(
-    label="second_pin", to_part=second.part, joint_location=Location(cyl.center())
+    label="shackle_pin", to_part=shackle.part, joint_location=Location(cyl.center())
 )
 j2.connect_to(j1, angle = 0)
 
 del micc, macc, bla, cyl, j1, j2
 
-second.part.color = "red"
+shackle.part.color = "red"
 
 show_all(reset_camera=Camera.KEEP)
 
-comp_hinge_arms = Compound((first.part, second.part))
+comp_hinge_arms = Compound((t_hinge.part, shackle.part))
 export_step(comp_hinge_arms, "hinge_lever.step")
