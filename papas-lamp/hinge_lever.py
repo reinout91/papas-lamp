@@ -12,12 +12,15 @@ set_port(3939)
 print(build123d.__version__)
 
 # specify parameters on base of the hinges
+ideal_layer_height = 0.2 * MM
+ideal_vert_gap = 2 * ideal_layer_height
+
 W1 = 6 * MM
 H = 6 * MM
-H2 = 3.9 * MM
-H3 = 4 * MM
-pin_radius = 2 * MM
-hole_radius = 1.9 * MM
+H3 = 3 * MM
+H2 = H3 - ideal_vert_gap
+pin_radius = 1.8 * MM
+hole_radius = 2 * MM
 
 macc = (Align.MAX, Align.CENTER, Align.CENTER)
 micc = (Align.MIN, Align.CENTER, Align.CENTER)
@@ -25,7 +28,7 @@ micc = (Align.MIN, Align.CENTER, Align.CENTER)
 with BuildPart() as first:
     with Locations((-10, 0, 0)):
         bla = Box(6, 50, H, align = macc)
-        Box(14, 6.1, H2, align = micc)
+        Box(14, 6, H2, align = micc)
     with Locations(bla.faces().filter_by(Axis.Y)[-1].center_location):
         bla = Box(H2, 6, 8, align=(Align.CENTER, Align.CENTER, Align.MIN))
     with Locations(
@@ -72,7 +75,6 @@ j2.connect_to(j1, angle = 0)
 del micc, macc, bla, cyl, j1, j2
 
 second.part.color = "red"
-
 
 show_all(reset_camera=Camera.KEEP)
 
