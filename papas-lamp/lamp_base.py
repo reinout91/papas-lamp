@@ -53,19 +53,16 @@ class HelixShape(BasePartObject):
             part=solid, rotation=rotation, align=tuplify(align, 3), mode=mode
         )
 
-tt=0.5
-
-
 with BuildPart(Plane.XY) as regular_polygon_platform:
     '''De bovenkant van de lamp is in vorm van een polygon.
     Later is dit uitgebreid met scharnieren en een hulst om de binnenste koker in te draaien'''
     g = 18
     n_sides = 7
 
-    with Locations((0,0,tt)):
+    with Locations((0,0,0)):
         with PolarLocations(radius=g, count=n_sides, start_angle=360 / (2 * n_sides)) as dl:
-            Box(11, 6, 6.5, align=(Align.MAX, Align.CENTER, Align.MIN))
-            Box(11, 3, 6.5, align=(Align.MAX, Align.CENTER, Align.MIN), mode = Mode.SUBTRACT)
+            Box(11, 6, 6.6, align=(Align.MAX, Align.CENTER, Align.MIN))
+            Box(11, 3, 6.6, align=(Align.MAX, Align.CENTER, Align.MIN), mode = Mode.SUBTRACT)
             with Locations((-3.5, 0, 3.5)) as pl:
                 Cylinder(
                     2,
@@ -78,9 +75,18 @@ with BuildPart(Plane.XY) as regular_polygon_platform:
 
 
                 [RigidJoint(label=f"revojoint_{i}", joint_location=Location(loc.position, loc.orientation)*Rot(90,0,0)) for i, loc in enumerate(pl.locations)]
-        Cylinder(8.3, 6.5, align=(Align.CENTER, Align.CENTER, Align.MIN))
-        Cylinder(7, 6.5, align=(Align.CENTER, Align.CENTER, Align.MIN), mode = Mode.SUBTRACT)
-
+        Cylinder(8.3, 6.6, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        Cylinder(6, 6.6, align=(Align.CENTER, Align.CENTER, Align.MIN), mode = Mode.SUBTRACT)
+        with BuildLine ():
+            l1 = Helix(pitch =(6.6*7)/3, height = 6.6, radius = 7, )
+            # myface = make_face((l1 ^ 0) * RegularPolygon(0.5,4))
+        # with Locations():
+        with BuildSketch(Location((0,0,0),(0,0,0))):
+            # mysphere = Sphere(2)
+            myface = RegularPolygon(7,7)
+        sweep([myface], l1, multisection=True, is_frenet=True, binormal=False, mode = Mode.SUBTRACT)
+        # with BuildSketch(Plane(origin=l1 @ 0, z_dir=l1 % 0)):
+        #     Circle(threadradius)
 
 ''' visualisatie'''
 #Delete the original parts, only the copied instances remain,.
