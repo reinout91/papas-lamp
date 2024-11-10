@@ -9,6 +9,8 @@ import build123d
 from build123d import *
 from build123d.topology import tuplify
 from ocp_vscode import *
+from  build123d_ease import align
+
 
 set_port(3939)
 
@@ -27,19 +29,19 @@ with BuildPart() as hexacon_pin:
         Circle(7-0.2)
     loft(ruled = True)
     with Locations(hexacon_pin.faces().sort_by(Axis.Z)[0]) as ref1:
-        Cylinder(8.3,4.6, align=(Align.CENTER, Align.CENTER, Align.MIN))
-        Cone(7, 5.2,2, align=(Align.CENTER, Align.CENTER, Align.MIN), mode = Mode.SUBTRACT)
-        Cylinder(5.2,4.6, align=(Align.CENTER, Align.CENTER, Align.MIN), mode = Mode.SUBTRACT)
-        Cone(7-0.2, 5,2, align=(Align.CENTER, Align.CENTER, Align.MIN))
-        Cylinder(5,4.6, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        Cylinder(8.3,4.6, align=align.BOTTOM)
+        Cone(7, 5.2,2, align=align.BOTTOM, mode = Mode.SUBTRACT)
+        Cylinder(5.2,4.6, align=align.BOTTOM, mode = Mode.SUBTRACT)
+        Cone(7-0.2, 5,2, align=align.BOTTOM)
+        Cylinder(5,4.6, align=align.BOTTOM)
     with Locations(hexacon_pin.faces().sort_by(Axis.Z)[0]):
-        Cylinder(8.3,1, align=(Align.CENTER, Align.CENTER, Align.MIN))
-        Cone(5.2, 7,2, align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.SUBTRACT)
-        Cone(5, 5.9,1, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        Cylinder(8.3,1, align=align.BOTTOM)
+        Cone(5.2, 7,2, align=align.BOTTOM, mode=Mode.SUBTRACT)
+        Cone(5, 5.9,1, align=align.BOTTOM)
     with Locations(hexacon_pin.faces().sort_by(Axis.Z)[0]):
-        Cylinder(8.3,1, align=(Align.CENTER, Align.CENTER, Align.MIN))
-        Cylinder(5.9+0.2,1, align=(Align.CENTER, Align.CENTER, Align.MIN), mode = Mode.SUBTRACT)
-        Cylinder(5.9,1, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        Cylinder(8.3,1, align=align.BOTTOM)
+        Cylinder(5.9+0.2,1, align=align.BOTTOM, mode = Mode.SUBTRACT)
+        Cylinder(5.9,1, align=align.BOTTOM)
     with Locations(hexacon_pin.faces().sort_by(Axis.Z)[0]):
         with PolarLocations(radius=18, count=7, start_angle=360 / (2 * 7)) as dl:
             Box(11, 6, 6.6, align=(Align.MAX, Align.CENTER, Align.MAX))

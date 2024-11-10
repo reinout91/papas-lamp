@@ -8,9 +8,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11.9"
 cadquery = "^2.4.0"
-ocp-vscode = "^2.5.3"
+ocp-vscode = "^2.6.1"
 cadquery-ocp = "^7.7.0"
-build123d = "^0.5.0"
+build123d = "^0.7.0"
+build123d-ease="^0.1.2"
 
 [tool.poetry.scripts]
 papas-lamp = 'papas-lamp:main'
