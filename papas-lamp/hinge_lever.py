@@ -51,15 +51,15 @@ with BuildPart() as shackle:
         with Locations((0,0,-dist2), (0,0,dist2)):
             add(ex28_ex)
     del ex28_ex
-    cyl = Cylinder(pin_radius, H, align = align.CENTER, mode=Mode.ADD)
+    cyl = Cylinder(pin_radius, H3, align = align.CENTER, mode=Mode.ADD)
 
     wp = Plane(origin=(dist1+(dist1/2),0,0))
 
     with BuildSketch(wp):
         SlotCenterToCenter(dist1,6)
-    extrude(amount=1.3, both=True, mode = Mode.ADD)
+    extrude(amount=1.4, both=True, mode = Mode.ADD)
     with Locations((axle_to_axle,0,0)):
-        Cylinder(pin_radius, H, align = align.CENTER, mode=Mode.ADD)
+        Cylinder(pin_radius, 6, align = align.CENTER, mode=Mode.ADD)
 
 j1 = RevoluteJoint(label="t_hinge_hole", to_part=t_hinge.part, axis= Axis(hole.center(),(0,0,1)))
 j2 = RigidJoint(
