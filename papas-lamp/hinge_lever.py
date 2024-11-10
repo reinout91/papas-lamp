@@ -5,7 +5,7 @@ import build123d
 from build123d import *
 from build123d.topology import tuplify
 from ocp_vscode import *
-from build123d_ease import align, back_face_of
+from build123d_ease import align, back_face_of, front_face_of
 
 set_port(3939)
 
@@ -22,20 +22,19 @@ H2 = H3 - ideal_vert_gap
 pin_radius = 1.8 * MM
 hole_radius = 2 * MM
 
+hole_x = 10 * MM
+axle_to_axle = 25.5 * MM
 
 with BuildPart() as t_hinge:
-    with Locations((-W1, -5, 0)):
-        bla = Box(W1, 50, H, align = align.RIGHT)
-    with Locations((-W1, 0, 0)):
-        Box(10, W1, H2, align = align.LEFT)
-    with Locations(back_face_of(bla).center_location):
-        bla = Box(H2, W1, 8, align=align.BOTTOM)
-    with Locations(
-       back_face_of(bla).center_location.position + (0, -1, 0)
-    ):
-        Cylinder(pin_radius, H, align=align.BACK)
-
-    Hole(hole_radius)
+    Cylinder(pin_radius, H, align=align.CENTER)
+    with Locations((0, -axle_to_axle, 0)):
+        Box(hole_x+3, W1, H2, align = align.LEFT)
+        with Locations((hole_x, 0, 0)):
+            hole = Hole(hole_radius)
+    with Locations((0,-1,0)):
+        ref1 = Box(W1, 8, H2, align=align.CENTER)
+    with Locations(front_face_of(ref1)):
+        ref2 = Box(H,  W1, 50, align = align.BOTTOM)
     max_fillet = t_hinge.part.max_fillet(
         t_hinge.edges().filter_by(Axis.Z), tolerance=0.2, max_iterations=20
     )
@@ -59,13 +58,13 @@ with BuildPart() as shackle:
     )
     fillet(objects=shackle.edges().filter_by(Axis.Z), radius=max_fillet)
 
-j1 = RevoluteJoint(label="t_hinge_hole", to_part=t_hinge.part)
+j1 = RevoluteJoint(label="t_hinge_hole", to_part=t_hinge.part, axis= Axis(hole.center(),(0,0,1)))
 j2 = RigidJoint(
     label="shackle_pin", to_part=shackle.part, joint_location=Location(cyl.center())
 )
 j1.connect_to(j2, angle = 90)
 
-del align.LEFT, align.RIGHT, bla, cyl, j1, j2
+del cyl, j1, j2, hole, ref1, ref2, bla
 
 shackle.part.color = "red"
 
