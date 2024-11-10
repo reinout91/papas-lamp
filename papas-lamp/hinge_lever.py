@@ -23,7 +23,7 @@ pin_radius = 1.8 * MM
 hole_radius = 2 * MM
 
 hole_x = 10 * MM
-axle_to_axle = 25.5 * MM
+axle_to_axle = 30 * MM
 
 with BuildPart() as t_hinge:
     Cylinder(pin_radius, H, align=align.CENTER)
@@ -41,22 +41,25 @@ with BuildPart() as t_hinge:
     fillet(objects=t_hinge.edges().filter_by(Axis.Z), radius=max_fillet)
 
 with BuildPart() as shackle:
-    with Locations((-2, 0, 0)):
-        bla = Box(10, W1, H, align = align.LEFT)
-    with Locations(bla.faces().filter_by(Axis.X)[-1].center_location.position):
-        bla = Box(14, W1, H, align = align.LEFT)
-        Box(80,30,H3,align = align.RIGHT, mode = Mode.SUBTRACT)
-    cyl = Cylinder(pin_radius, H, align = align.LEFT)
-    with Locations(bla.faces().filter_by(Axis.X)[-1].center_location.position):
-        bla = Box(8, W1, H2, align = align.LEFT)
-    with Locations(
-        bla.faces().filter_by(Axis.X)[-1].center_location.position + (-1, 0, 0)
-    ):
-        Cylinder(pin_radius, H, align = align.RIGHT)
-    max_fillet = shackle.part.max_fillet(
-        shackle.edges().filter_by(Axis.Z), tolerance = 2, max_iterations = 20
-    )
-    fillet(objects=shackle.edges().filter_by(Axis.Z), radius=max_fillet)
+
+    dist1 = axle_to_axle/2
+    dist2 = 2.2
+    with BuildSketch():
+        SlotCenterToCenter(dist1,6)
+    ex28_ex = extrude(amount=2*(H2-H3), both=True, mode = Mode.PRIVATE)
+    with Locations((dist1/2,0,0)):
+        with Locations((0,0,-dist2), (0,0,dist2)):
+            add(ex28_ex)
+    del ex28_ex
+    cyl = Cylinder(pin_radius, H, align = align.CENTER, mode=Mode.ADD)
+
+    wp = Plane(origin=(dist1+(dist1/2),0,0))
+
+    with BuildSketch(wp):
+        SlotCenterToCenter(dist1,6)
+    extrude(amount=1.3, both=True, mode = Mode.ADD)
+    with Locations((axle_to_axle,0,0)):
+        Cylinder(pin_radius, H, align = align.CENTER, mode=Mode.ADD)
 
 j1 = RevoluteJoint(label="t_hinge_hole", to_part=t_hinge.part, axis= Axis(hole.center(),(0,0,1)))
 j2 = RigidJoint(
@@ -64,7 +67,7 @@ j2 = RigidJoint(
 )
 j1.connect_to(j2, angle = 90)
 
-del cyl, j1, j2, hole, ref1, ref2, bla
+del cyl, j1, j2, hole, ref1, ref2
 
 shackle.part.color = "red"
 
