@@ -9,7 +9,7 @@ import build123d
 from build123d import *
 from build123d.topology import tuplify
 from ocp_vscode import *
-from  build123d_ease import align
+from build123d_ease import align
 
 
 set_port(3939)
@@ -52,7 +52,7 @@ with BuildPart() as hexacon_pin:
                     6,
                     360,
                     (90, 0, 0),
-                    (Align.CENTER, Align.CENTER, Align.CENTER),
+                    align.CENTER,
                     Mode.SUBTRACT,
                 )
 

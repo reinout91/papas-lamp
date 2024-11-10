@@ -5,7 +5,7 @@ import build123d
 from build123d import *
 from build123d.topology import tuplify
 from ocp_vscode import *
-
+from build123d_ease import align
 
 set_port(3939)
 
@@ -22,19 +22,17 @@ H2 = H3 - ideal_vert_gap
 pin_radius = 1.8 * MM
 hole_radius = 2 * MM
 
-macc = (Align.MAX, Align.CENTER, Align.CENTER)
-micc = (Align.MIN, Align.CENTER, Align.CENTER)
 
 with BuildPart() as t_hinge:
     with Locations((-10, 0, 0)):
-        bla = Box(6, 50, H, align = macc)
-        Box(14, 6, H2, align = micc)
+        bla = Box(6, 50, H, align = align.RIGHT)
+        Box(14, 6, H2, align = align.LEFT)
     with Locations(bla.faces().filter_by(Axis.Y)[-1].center_location):
-        bla = Box(H2, 6, 8, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        bla = Box(H2, 6, 8, align=align.BOTTOM)
     with Locations(
         bla.faces().filter_by(Axis.Y)[-1].center_location.position + (0, -1, 0)
     ):
-        Cylinder(pin_radius, H, align=(Align.CENTER, Align.MAX, Align.CENTER))
+        Cylinder(pin_radius, H, align=align.BACK)
 
     Hole(hole_radius)
     max_fillet = t_hinge.part.max_fillet(
@@ -44,23 +42,23 @@ with BuildPart() as t_hinge:
 
 with BuildPart() as shackle:
     with Locations((-2, 0, 0)):
-        bla = Box(10, W1, H, align = micc)
+        bla = Box(10, W1, H, align = align.LEFT)
     with Locations(bla.faces().filter_by(Axis.X)[-1].center_location.position):
-        bla = Box(10, W1, H, align = micc)
+        bla = Box(10, W1, H, align = align.LEFT)
         Box(
             80,
             30,
             H3,
-            align = macc,
+            align = align.RIGHT,
             mode = Mode.SUBTRACT,
         )
-    cyl = Cylinder(pin_radius, H, align = micc)
+    cyl = Cylinder(pin_radius, H, align = align.LEFT)
     with Locations(bla.faces().filter_by(Axis.X)[-1].center_location.position):
-        bla = Box(7, W1, H2, align = micc)
+        bla = Box(7, W1, H2, align = align.LEFT)
     with Locations(
         bla.faces().filter_by(Axis.X)[-1].center_location.position + (-1, 0, 0)
     ):
-        Cylinder(pin_radius, H, align = macc)
+        Cylinder(pin_radius, H, align = align.RIGHT)
     max_fillet = shackle.part.max_fillet(
         shackle.edges().filter_by(Axis.Z), tolerance = 2, max_iterations = 20
     )
@@ -72,7 +70,7 @@ j2 = RigidJoint(
 )
 j2.connect_to(j1, angle = 0)
 
-del micc, macc, bla, cyl, j1, j2
+del align.LEFT, align.RIGHT, bla, cyl, j1, j2
 
 shackle.part.color = "red"
 
