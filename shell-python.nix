@@ -71,7 +71,7 @@ let
     source ./$VENV/bin/activate
     export PYTHONPATH=$PYTHONPATH:`pwd`/$VENV/${myPython.sitePackages}/
     pip install --upgrade pip
-    pip install build123d ocp-vscode cadquery numpy
+    pip install build123d ocp-vscode cadquery numpy build123d-ease
     echo $GREETING | cowsay | lolcat
     '';
   };
