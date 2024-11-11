@@ -67,7 +67,7 @@ j2 = RigidJoint(
 )
 j1.connect_to(j2, angle = 90)
 
-del cyl, j1, j2, hole, ref1, ref2
+del cyl, j1, j2, hole, ref1, ref2, wp
 
 shackle.part.color = "red"
 
