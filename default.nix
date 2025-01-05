@@ -8,8 +8,8 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  myPython = pkgs.python311;
-  pythonPackages = pkgs.python311Packages;
+  myPython = pkgs.python312;
+  pythonPackages = pkgs.python312Packages;
 
   pythonWithPkgs = myPython.withPackages (pythonPkgs: with pythonPkgs; [
     # This list contains tools for Python development.

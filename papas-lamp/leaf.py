@@ -7,21 +7,21 @@ import build123d
 from build123d import *
 from build123d.topology import tuplify
 from ocp_vscode import *
+from build123d_ease import align, front_face_of, top_face_of, bottom_face_of
 
 set_port(3939)
 
 print(build123d.__version__)
+length_thinge = 50 * MM
+H = 6 * MM
+W1 = 6 * MM
+H_BLOKJE = W1/2
 
 class leaf(BasePartObject):
     def __init__(
         self,
         height: float,
         rotation: RotationLike = (0, 0, 0),
-        align: Union[Align, tuple[Align, Align, Align]] = (
-            Align.CENTER,
-            Align.CENTER,
-            Align.CENTER,
-        ),
         mode: Mode = Mode.ADD,
     ):
 
@@ -37,17 +37,22 @@ class leaf(BasePartObject):
 
             extrude(amount=height/25)
 
+            #clips:
+            display_face = top_face_of(liefdoen)
+            display_workplane = Plane(
+                origin=display_face.center(), x_dir=(1, 1, 0), z_dir=(0,-1, 0)
+            )
+            with BuildSketch(display_workplane):
+                with Locations((H/3*2,0,0)):
+                    Rectangle(width=H_BLOKJE, height=H_BLOKJE,align = align.FRONT_LEFT)
+                    with Locations((0,H_BLOKJE-H/3,0)):
+                        Triangle(a=H/3,b=H/3,C=90,rotation = 90, align=align.FRONT_LEFT)
+                    mirror(about=Plane.YZ, mode=Mode.ADD)
+            extrude(amount=3, mode=Mode.ADD, both=True)
+
         solid = liefdoen.part.solid()
 
         super().__init__(
             part=solid, rotation=rotation, align=tuplify(align, 3), mode=mode
         )
 
-    #making a slider
-
-
-#for visualistation purpose
-with BuildPart() as lieafsut:
-    leaf(height=30)
-
-show_all(reset_camera=Camera.KEEP)
