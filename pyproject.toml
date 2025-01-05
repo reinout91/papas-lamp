@@ -6,12 +6,13 @@ authors = ["Meermiri <miriamvanderhoek@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11.9"
+python = ">=3.12,<3.13"
 cadquery = "^2.4.0"
 ocp-vscode = "^2.6.1"
 cadquery-ocp = "^7.7.0"
-build123d = "^0.7.0"
-build123d-ease="^0.1.2"
+build123d = "^0.8.0"
+build123d-ease="^0.2.0.0"
+numpy="^2.2.1"
 
 [tool.poetry.scripts]
 papas-lamp = 'papas-lamp:main'
