@@ -44,9 +44,9 @@ class leaf(BasePartObject):
             )
             with BuildSketch(display_workplane):
                 with Locations((H/3*2,0,0)):
-                    Rectangle(width=H_BLOKJE, height=H_BLOKJE,align = align.FRONT_LEFT)
+                    Rectangle(width=H_BLOKJE, height=H_BLOKJE, align=align.ANCHOR_FRONT_LEFT)
                     with Locations((0,H_BLOKJE-H/3,0)):
-                        Triangle(a=H/3,b=H/3,C=90,rotation = 90, align=align.FRONT_LEFT)
+                        Triangle(a=H/3,b=H/3,C=90,rotation = 90, align=align.ANCHOR_FRONT_LEFT)
                     mirror(about=Plane.YZ, mode=Mode.ADD)
             extrude(amount=3, mode=Mode.ADD, both=True)
 
@@ -56,3 +56,6 @@ class leaf(BasePartObject):
             part=solid, rotation=rotation, align=tuplify(align, 3), mode=mode
         )
 
+with BuildPart() as lieafsut:
+    leaf(height=30)
+show_all(reset_camera=Camera.KEEP)
