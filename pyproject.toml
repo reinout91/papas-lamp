@@ -53,10 +53,6 @@ ignore = [
 fixable = ["ALL"]
 unfixable = []
 
-[tool.ruff.lint.per-file-ignores]
-"test/*" = ["SLF001", "S101"]
-"*/__init__.py" = ["D104"]
-
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
