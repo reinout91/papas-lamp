@@ -1,5 +1,5 @@
 [project]
-name = "lamp"
+name = "papas-lamp"
 version = "0.1.0"
 description = "A nice mechanical lamp"
 readme = "README.md"
@@ -11,14 +11,14 @@ dependencies = [
 ]
 
 [project.scripts]
-hello = "lamp:hello"
+hello = "papas-lamp:hello"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["lamp"]
+packages = ["papas-lamp"]
 
 [project.optional-dependencies]
 dev = [
