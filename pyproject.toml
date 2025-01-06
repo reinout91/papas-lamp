@@ -1,83 +1,48 @@
-[tool.poetry]
-name = "papas-lamp"
+[project]
+name = "lamp"
 version = "0.1.0"
-description = ""
-authors = ["Meermiri <miriamvanderhoek@gmail.com>"]
+description = "A nice mechanical lamp"
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ocp-vscode>=2.6.1",
+    "build123d>=0.8.0",
+    "build123d-ease>=0.2.0.0"
+]
 
-[tool.poetry.dependencies]
-python = ">=3.12,<3.13"
-cadquery = "^2.4.0"
-ocp-vscode = "^2.6.1"
-cadquery-ocp = "^7.7.0"
-build123d = "^0.8.0"
-build123d-ease="^0.2.0.0"
-numpy="^2.2.1"
-
-[tool.poetry.scripts]
-papas-lamp = 'papas-lamp:main'
+[project.scripts]
+hello = "lamp:hello"
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.group.linting.dependencies]
-autoflake = "^2.2.1"
-bandit = "^1.7.6"
-mypy = "^1.8.0"
-poetry-plugin-export = "^1.6.0"
-conventional-pre-commit = "^3.1.0"
+[tool.hatch.build.targets.wheel]
+packages = ["lamp"]
 
-[tool.mypy]
-no_implicit_optional = false
-ignore_missing_imports = true
-
-
-[tool.bandit]
-recursive = true
-skips = [
-    "B104", #hardcoded_bind_all_interfaces
-    "B108", #hardcoded_tmp_directory
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.4",
+    "ruff>=0.8.6",
+    "pyright>=1.1.391",
 ]
-exclude_dirs = ["test/", "local/"]
-
-[tool.pytest.ini_options]
-testpaths = "test"
-pythonpath = "papas-lamp"
-markers = [
-    "integration: marks tests as an integration test (enabled with '-m \"integration\"')",
-]
-addopts = "-m 'not integration' --durations=5"
-asyncio_mode = "auto"
-
 
 [tool.ruff]
-target-version = "py311"
-src = ["src", "test", "db-migrations", "deployment", "lambdas"]
+line-length = 88
 
 [tool.ruff.lint]
-select = ["ALL", "D"]
-ignore = [
-    "ANN102",
-    "D103",
-    "ANN101",
-    "COM812",
-    "D100",   # Missing docstring in public module - Google doesn't require docstrings for every module
-    "D101",   # Missing docstring in public class - Google doesn't require docstrings for every class
-    "D102",   # Missing docstring in public method - Google doesn't require docstrings for every method
-    "D103",   # Missing docstring in public function - Google doesn't require docstrings for every function
-    "D107",   # Missing docstring in __init__ - Google doesn't require docstrings for __init__ methods
-    "D203",   # 1 blank line required before class docstring - Google style doesn't require this
-    "D213",   # Multi-line docstring summary should start at the second line - Google prefers docstrings to start on the first line
-
+select = [
+    "ALL",
 ]
-fixable = ["ALL"]
-unfixable = []
+
+ignore = [
+    "D203", # Fix warning.
+    "D213", # Fix warning.
+    "COM812", # Fix warning.
+    "ISC001", # Fix warning.
+]
 
 [tool.ruff.lint.per-file-ignores]
-"test/*" = ["SLF001", "S101"]
-"*/__init__.py" = ["D104"]
-
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
+"./tests/**/*.py" = [
+    "S101", # Allow asserts.
+]
