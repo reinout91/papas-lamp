@@ -1,6 +1,5 @@
 {
-  #look at: https://github.com/pyedifice/pyedifice/blob/79068caa0aed5f43d269186af3d923fdccf3f5b0/flake.nix#L15
-  description = "Papas lamp flake using uv2nix";
+  description = "papas-lamp flake using uv2nix";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -22,20 +21,18 @@
       inputs.uv2nix.follows = "uv2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    uv2nix_hammer_overrides.url = "github:TyberiusPrime/uv2nix_hammer_overrides";
+    uv2nix_hammer_overrides.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  # Disclaimer: Uv2nix is new and experimental.
-  # Users are expected to be able to contribute fixes.
-  #
-  # Note that uv2nix is _not_ using Nixpkgs buildPythonPackage.
-  # It's using https://pyproject-nix.github.io/pyproject.nix/build.html
-
   outputs =
-    {
+    inputs@{
       nixpkgs,
       uv2nix,
       pyproject-nix,
       pyproject-build-systems,
+      uv2nix_hammer_overrides,
       ...
     }:
     let
@@ -43,6 +40,7 @@
 
       # Load a uv workspace from a workspace root.
       # Uv2nix treats all uv projects as workspace projects.
+      # https://pyproject-nix.github.io/uv2nix/lib/workspace.html
       workspace = uv2nix.lib.workspace.loadWorkspace { workspaceRoot = ./.; };
 
       # Create package overlay from workspace.
@@ -57,18 +55,19 @@
         # };
       };
 
+      # This example is only using x86_64-linux
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
       # Extend generated overlay with build fixups
       #
       # Uv2nix can only work with what it has, and uv.lock is missing essential metadata to perform some builds.
       # This is an additional overlay implementing build fixups.
       # See:
       # - https://pyproject-nix.github.io/uv2nix/FAQ.html
-      pyprojectOverrides = _final: _prev: {
+
+      pyprojectOverrides = final: prev: {
         # Implement build fixups here.
       };
-
-      # This example is only using x86_64-linux
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
 
       # Use Python 3.12 from nixpkgs
       python = pkgs.python312;
@@ -84,6 +83,10 @@
               pyproject-build-systems.overlays.default
               overlay
               pyprojectOverrides
+              # Currently uv2nix_hammer_overrides breaks the build
+              # because it overrides final.pyside6-essentials.
+              # (uv2nix_hammer_overrides.overrides pkgs)
+              (import ./pyproject-overrides.nix pkgs)
             ]
           );
 
@@ -97,7 +100,10 @@
       # This example provides two different modes of development:
       # - Impurely using uv to manage virtual environments
       # - Pure development using uv2nix to manage virtual environments
-      devShells.x86_64-linux = {
+      devShells.x86_64-linux = rec {
+
+        default = uv2nix;
+
         # It is of course perfectly OK to keep using an impure virtualenv workflow and only use uv2nix to build packages.
         # This devShell simply adds Python and undoes the dependency leakage done by Nixpkgs Python infrastructure.
         impure = pkgs.mkShell {
@@ -105,21 +111,31 @@
             python
             pkgs.uv
           ];
-          env =
-            {
-              # Prevent uv from managing Python downloads
-              UV_PYTHON_DOWNLOADS = "never";
-              # Force uv to use nixpkgs Python interpreter
-              UV_PYTHON = python.interpreter;
-            }
-            // lib.optionalAttrs pkgs.stdenv.isLinux {
-              # Python libraries often load native shared objects using dlopen(3).
-              # Setting LD_LIBRARY_PATH makes the dynamic library loader aware of libraries without using RPATH for lookup.
-              LD_LIBRARY_PATH = lib.makeLibraryPath pkgs.pythonManylinuxPackages.manylinux1;
-            };
-          shellHook = ''
-            unset PYTHONPATH
-          '';
+          shellHook =
+            let
+              libraries = [
+                # pkgs.stdenv.cc.cc.lib
+                # pkgs.glib
+              ];
+            in
+            ''
+              # fixes libstdc++ issues and libgl.so issues
+              export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath libraries}"
+              # https://github.com/NixOS/nixpkgs/issues/80147#issuecomment-784857897
+              export QT_PLUGIN_PATH="${pkgs.qt6.qtbase}/${pkgs.qt6.qtbase.qtPluginPrefix}"
+              # export QT_DEBUG_PLUGINS=1
+
+              # uv2nix environment settings
+              unset PYTHONPATH
+              export UV_PYTHON_DOWNLOADS=never
+
+              echo ""
+              echo "    uv venv"
+              echo "    source .venv/bin/activate"
+              echo "    uv sync --all-extras"
+              echo ""
+
+            '';
         };
 
         # This devShell uses uv2nix to construct a virtual environment purely from Nix, using the same dependency specification as the application.
@@ -149,25 +165,29 @@
             packages = [
               virtualenv
               pkgs.uv
+              pkgs.pyright
+              pkgs.nixd
             ];
-
-            env = {
-              # Don't create venv using uv
-              UV_NO_SYNC = "1";
-
-              # Force uv to use Python interpreter from venv
-              UV_PYTHON = "${virtualenv}/bin/python";
-
-              # Prevent uv from downloading managed Python's
-              UV_PYTHON_DOWNLOADS = "never";
-            };
-
             shellHook = ''
               # Undo dependency propagation by nixpkgs.
               unset PYTHONPATH
 
+              # Don't create venv using uv
+              export UV_NO_SYNC=1
+
+              # Prevent uv from downloading managed Python's
+              export UV_PYTHON_DOWNLOADS=never
+
               # Get repository root using git. This is expanded at runtime by the editable `.pth` machinery.
               export REPO_ROOT=$(git rev-parse --show-toplevel)
+
+              # # Need LC_ALL for the `make html` command in the docs/ directory
+              # # because of https://github.com/sphinx-doc/sphinx/issues/11739
+              # LC_ALL = "C.UTF-8";
+              # # Need PYTHONPATH for VS Code Debugger mode so that we run pypapas-lamp
+              # # in the source tree, not in the Nix store. It's not enough to get
+              # # changes with editablePackageSources; we also want to set breakpoints.
+              # PYTHONPATH = ".";
             '';
           };
       };
