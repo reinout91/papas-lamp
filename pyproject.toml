@@ -7,7 +7,8 @@ requires-python = ">=3.12"
 dependencies = [
     "ocp-vscode>=2.6.1",
     "build123d>=0.8.0",
-    "build123d-ease>=0.2.0.0"
+    "build123d-ease>=0.2.0.0",
+    "pip>=24.3.1"
 ]
 
 [project.scripts]

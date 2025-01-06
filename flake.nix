@@ -110,7 +110,6 @@
           packages = [
             python
             pkgs.uv
-            pkgs.python312Packages.pip #needed by ocpvscode-plugin to inspect installed packages.
           ];
           shellHook =
             let
