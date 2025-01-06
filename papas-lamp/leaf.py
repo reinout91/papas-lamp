@@ -56,6 +56,7 @@ class leaf(BasePartObject):
             part=solid, rotation=rotation, align=tuplify(align, 3), mode=mode
         )
 
-with BuildPart() as lieafsut:
+# visualisation purpose
+with BuildPart() as leaf_view:
     leaf(height=30)
 show_all(reset_camera=Camera.KEEP)
