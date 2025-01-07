@@ -1,3 +1,3 @@
 def hello() -> None:
-"""Fff."""
+    """Hello."""
     print("Hello from hello-world!")
