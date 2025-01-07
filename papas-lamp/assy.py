@@ -10,9 +10,8 @@ from build123d import (
     RigidJoint,
     add,
 )
+from hinge_lever import shackle, t_hinge
 from ocp_vscode import Camera, set_port, show_all
-
-from .hinge_lever import shackle, t_hinge
 
 
 # for visualistation purpose
