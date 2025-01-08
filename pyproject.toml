@@ -1,7 +1,7 @@
 [project]
-name = "papas-lamp"
+name = "lampapy"
 version = "0.1.0"
-description = "A nice mechanical lamp"
+description = "A nice mechanical lamp written in Python."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -11,14 +11,14 @@ dependencies = [
 ]
 
 [project.scripts]
-hello = "papas-lamp:hello"
+hello = "lampapa:hello"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["papas-lamp"]
+packages = ["lampapa"]
 
 [project.optional-dependencies]
 dev = [

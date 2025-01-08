@@ -1,5 +1,5 @@
 {
-  description = "papas-lamp flake using uv2nix";
+  description = "lampapy flake using uv2nix";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -95,7 +95,7 @@
       # Package a virtual environment as our main application.
       #
       # Enable no optional dependencies for production build.
-      packages.x86_64-linux.default = pythonSet.mkVirtualEnv "papas-lamp-env" workspace.deps.default;
+      packages.x86_64-linux.default = pythonSet.mkVirtualEnv "lampapy-env" workspace.deps.default;
 
       # This example provides two different modes of development:
       # - Impurely using uv to manage virtual environments
@@ -158,7 +158,7 @@
             # Build virtual environment, with local packages being editable.
             #
             # Enable all optional dependencies for development.
-            virtualenv = editablePythonSet.mkVirtualEnv "papas-lamp-dev-env" workspace.deps.all;
+            virtualenv = editablePythonSet.mkVirtualEnv "lampapy" workspace.deps.all;
 
           in
           pkgs.mkShell {
@@ -184,7 +184,7 @@
               # # Need LC_ALL for the `make html` command in the docs/ directory
               # # because of https://github.com/sphinx-doc/sphinx/issues/11739
               # LC_ALL = "C.UTF-8";
-              # # Need PYTHONPATH for VS Code Debugger mode so that we run pypapas-lamp
+              # # Need PYTHONPATH for VS Code Debugger mode so that we run lampapy
               # # in the source tree, not in the Nix store. It's not enough to get
               # # changes with editablePackageSources; we also want to set breakpoints.
               # PYTHONPATH = ".";

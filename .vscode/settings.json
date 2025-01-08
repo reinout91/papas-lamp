@@ -39,6 +39,6 @@
         }
     },
     "python.analysis.extraPaths": [
-        "./papas-lamp"
+        "./lampapy"
     ]
 }
