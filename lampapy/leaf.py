@@ -21,7 +21,7 @@ from build123d import (
 )
 from build123d.topology import tuplify
 from build123d_ease import align, top_face_of
-from ocp_vscode import set_port
+from ocp_vscode import Camera, set_port, show_all
 
 set_port(3939)
 
@@ -55,7 +55,7 @@ class Leaf(BasePartObject):
                 make_face()
                 scale(by=height / pedal.sketch.bounding_box().size.Y)
 
-            extrude(amount=height / 25)
+            extrude(amount=-height / 25)
 
             # clips:
             display_face = top_face_of(liefdoen)
@@ -85,7 +85,7 @@ class Leaf(BasePartObject):
         )
 
 
-# visualisation purpose
-with BuildPart() as leaf_view:
-    leaf(height=30)
-show_all(reset_camera=Camera.KEEP)
+if __name__ == "__main__":
+    with BuildPart() as leaf_view:
+        Leaf(height=30)
+    show_all(reset_camera=Camera.KEEP)

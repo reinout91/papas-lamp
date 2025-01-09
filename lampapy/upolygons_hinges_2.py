@@ -59,6 +59,6 @@ with BuildPart() as Outer_Tube:
     with Locations((0, 0, 60 / 2)):
         Cylinder(6, 30)
         Hole(5.1)
-        HelixShape(10, 10, threadradius=0.2, mode=Mode.SUBTRACT)
+        HelixShape(threadradius=0.2, mode=Mode.SUBTRACT)
 
 show_all(reset_camera=Camera.KEEP, render_joints=True, render_mates=True)

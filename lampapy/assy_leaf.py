@@ -3,15 +3,18 @@ from enum import Enum, auto
 from build123d import (
     Axis,
     BuildPart,
+    Compound,
     Face,
     GeomType,
+    Location,
     Part,
     RevoluteJoint,
     RigidJoint,
     add,
 )
 from hinge_lever import shackle, t_hinge
-from ocp_vscode import Camera, set_port, show_all
+from leaf import Leaf
+from ocp_vscode import Camera, set_port, show
 
 
 # for visualistation purpose
@@ -52,23 +55,37 @@ def get_cylindric_faces_and_axes(
     return [(face, get_axis_from_face(face)) for face in filtered_faces]
 
 
-with BuildPart():
-    add(shackle)
-    add(t_hinge)
-    shackle.color = "red"
+leaf = Leaf(height=50)
 
-    axis_of_hinge = -get_cylindric_faces_and_axes(t_hinge.part, CylinderType.HOLE)[0][1]
-    axis_of_shackle = get_cylindric_faces_and_axes(shackle.part, CylinderType.PIN)[2][
-        1
-    ].location
+shackle.part.color = "red"
+leaf.color = "green"
 
-    j1 = RevoluteJoint(label="t_hinge_hole", to_part=t_hinge.part, axis=axis_of_hinge)
-    j2 = RigidJoint(
-        label="shackle_pin", to_part=shackle.part, joint_location=axis_of_shackle
-    )
+axis_of_hinge = -get_cylindric_faces_and_axes(t_hinge.part, CylinderType.HOLE)[0][1]
+axis_of_shackle = get_cylindric_faces_and_axes(shackle.part, CylinderType.PIN)[2][
+    1
+].location
 
-    j1.connect_to(j2, angle=20)
+j1 = RevoluteJoint(label="t_hinge_hole", to_part=t_hinge.part, axis=axis_of_hinge)
+j2 = RigidJoint(
+    label="shackle_pin", to_part=shackle.part, joint_location=axis_of_shackle
+)
 
+j1.connect_to(j2)
 
-set_port(3939)
-show_all(reset_camera=Camera.KEEP)
+j3 = RigidJoint(
+    label="leaf", to_part=leaf, joint_location=Location((0, 40, 3.5), (0, -90, 0))
+)
+j4 = RigidJoint(
+    label="t_end", to_part=t_hinge, joint_location=Location((0, 0, 0), (0, 0, 0))
+)
+j4.connect_to(j3)
+
+assy_leaf = Compound(
+    label="assy_leaf",
+    children=[shackle.part, t_hinge.part, leaf],
+    joints=[j1],
+)
+
+if __name__ == "__main__":
+    set_port(3939)
+    show(assy_leaf, reset_camera=Camera.KEEP)
