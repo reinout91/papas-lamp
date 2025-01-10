@@ -5,6 +5,6 @@ direnv allow
 nix develop  
 code .  
 
-else
-uv sync
+else  
+uv sync  
 code .
