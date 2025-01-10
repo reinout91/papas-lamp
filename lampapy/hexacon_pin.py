@@ -24,11 +24,6 @@ from build123d import (
 from build123d_ease import align
 from ocp_vscode import Camera, set_port, show_all
 
-set_port(3939)
-
-print(build123d.__version__)
-
-
 with BuildPart() as hexacon_pin:
     with BuildLine():
         l1 = Helix(
@@ -76,6 +71,8 @@ with BuildPart() as hexacon_pin:
                     Mode.SUBTRACT,
                 )
 
-
-export_step(hexacon_pin.part, "hexacon_pin.step")
-show_all(reset_camera=Camera.KEEP)
+if __name__ == "__main__":
+    set_port(3939)
+    print(build123d.__version__)
+    export_step(hexacon_pin.part, "hexacon_pin.step")
+    show_all(reset_camera=Camera.KEEP)
