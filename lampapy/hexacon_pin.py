@@ -24,18 +24,16 @@ from build123d import (
 from build123d_ease import align
 from ocp_vscode import Camera, set_port, show_all
 
-set_port(3939)
-
-print(build123d.__version__)
-
-
 with BuildPart() as hexacon_pin:
+    side_count_spiral = 7
+    side_count_arms = 7
+
     with BuildLine():
         l1 = Helix(
             pitch=(6.6 * 7) / 3, height=3 * 6.6, radius=7 - 0.2, direction=(0, 0, 1)
         )
     with BuildSketch(Location((0, 0, 0), (0, 0, 0))):
-        myface = RegularPolygon(7 - 0.2, 7)
+        myface = RegularPolygon(7 - 0.2, side_count_spiral)
     axle = sweep([myface], l1, multisection=True, is_frenet=True, binormal=False)
     with BuildSketch(hexacon_pin.faces().sort_by(Axis.Z)[0]) as ex24_sk:
         RegularPolygon(7 - 0.2, 7)
@@ -57,7 +55,9 @@ with BuildPart() as hexacon_pin:
         Cylinder(5.9 + 0.2, 1, align=align.ANCHOR_BOTTOM, mode=Mode.SUBTRACT)
         Cylinder(5.9, 1, align=align.ANCHOR_BOTTOM)
     with Locations(hexacon_pin.faces().sort_by(Axis.Z)[0]):
-        with PolarLocations(radius=18, count=7, start_angle=360 / (2 * 7)) as dl:
+        with PolarLocations(
+            radius=18, count=side_count_arms, start_angle=360 / (2 * 7)
+        ) as dl:
             Box(11, 6, 6.6, align=(Align.MAX, Align.CENTER, Align.MAX))
             Box(
                 11,
@@ -76,6 +76,8 @@ with BuildPart() as hexacon_pin:
                     Mode.SUBTRACT,
                 )
 
-
-export_step(hexacon_pin.part, "hexacon_pin.step")
-show_all(reset_camera=Camera.KEEP)
+if __name__ == "__main__":
+    set_port(3939)
+    print(build123d.__version__)
+    # export_step(hexacon_pin.part, "hexacon_pin.step")
+    show_all(reset_camera=Camera.KEEP)
