@@ -13,6 +13,19 @@ def axis_from_three_points(pts: list[bd.VectorLike]) -> bd.Axis:
     return bd.Axis(center, ax2.direction.cross(ax3.direction))
 
 
+def polar_locations_from_rectangular_locations(
+    pts: list[bd.Location], axis: bd.Axis
+) -> list[bd.Location]:
+    return [
+        bd.Plane(
+            pt,
+            x_dir=bd.Line(pt, axis.position).to_axis().direction,
+            z_dir=axis.direction,
+        ).location
+        for pt in pts
+    ]
+
+
 if __name__ == "__main__":
     pts = [bd.Vector(0, 0, 9), bd.Vector(2, 0), bd.Vector(4, 5)]
     axis = axis_from_three_points(pts)
