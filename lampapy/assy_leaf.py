@@ -80,11 +80,7 @@ j4 = RigidJoint(
 )
 j4.connect_to(j3)
 
-assy_leaf = Compound(
-    label="assy_leaf",
-    children=[shackle.part, t_hinge.part, leaf],
-    joints=[j1],
-)
+assy_leaf = Compound(label="assy_leaf", children=[shackle.part, t_hinge.part, leaf])
 
 if __name__ == "__main__":
     set_port(3939)
