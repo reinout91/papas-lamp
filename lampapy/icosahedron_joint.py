@@ -22,9 +22,8 @@ OFFSET = 3.6
 OFFSET_LOCATION = Location((0, 0, OFFSET))
 BOTTOM_ALIGN = (Align.CENTER, Align.CENTER, Align.MIN)
 FLOOR_OFFSET = Location((0, 0, 5.9))
-angle_xob = asin(1 / sqrt(1.618**2 + 1)) * (180 / pi)
+angle_xob = asin(1 / sqrt(PHI**2 + 1)) * (180 / pi)
 
-print(angle_xob)
 # Icosahedron vertices
 icosahedron_vertices = (
     [Vector(0, i, j * PHI) for i in [-1, 1] for j in [-1, 1]]
