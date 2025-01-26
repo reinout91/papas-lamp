@@ -1,4 +1,4 @@
-from math import sqrt, asin, pi
+from math import asin, pi, sqrt
 
 from build123d import (
     Align,
@@ -11,7 +11,6 @@ from build123d import (
     export_step,
 )
 from ocp_vscode import Camera, set_port, show_all
-
 
 # Constants
 PHI = (1 + sqrt(5)) / 2
