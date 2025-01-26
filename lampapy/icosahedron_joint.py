@@ -1,4 +1,4 @@
-from math import sqrt, asin, pi
+from math import asin, pi, sqrt
 
 from build123d import (
     Align,
@@ -12,7 +12,6 @@ from build123d import (
 )
 from ocp_vscode import Camera, set_port, show_all
 
-
 # Constants
 PHI = (1 + sqrt(5)) / 2
 R_OUT = 4.5 / 2
@@ -24,7 +23,6 @@ BOTTOM_ALIGN = (Align.CENTER, Align.CENTER, Align.MIN)
 FLOOR_OFFSET = Location((0, 0, 5.9))
 angle_xob = asin(1 / sqrt(PHI**2 + 1)) * (180 / pi)
 
-print(angle_xob)
 # Icosahedron vertices
 icosahedron_vertices = (
     [Vector(0, i, j * PHI) for i in [-1, 1] for j in [-1, 1]]
