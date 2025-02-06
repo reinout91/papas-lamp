@@ -1,4 +1,4 @@
-from math import acos, asin, pi, sqrt
+from math import acos, asin, atan, pi, sqrt
 
 from build123d import (
     Align,
@@ -8,6 +8,7 @@ from build123d import (
     Location,
     Part,
     Vector,
+    Plane,
     export_step,
     objects_part,
 )
@@ -23,6 +24,13 @@ BOTTOM_ALIGN = (Align.CENTER, Align.CENTER, Align.MIN)
 
 icosahedron_xob = asin(1 / sqrt(PHI**2 + 1)) * (180 / pi)
 dodecahedron_xob = acos(-(sqrt(3) + sqrt(15)) / 6) * (180 / pi) - 180
+tetrahedron_xob = atan(sqrt(2)) * 180/pi
+
+tetrahedron_vertices = [vert.rotate(Axis((0,0,0),(1,-1,0)), tetrahedron_xob)for vert in (Vector(1, 1, 1),
+                                                                          Vector(1, -1, -1),
+                                                                          Vector(-1, 1, -1),
+                                                                          Vector(-1, -1, 1)
+                                                                          )]
 
 icosahedron_vertices = [
     vert.rotate(Axis.X, icosahedron_xob)
@@ -42,6 +50,11 @@ dodecahedron_vertices = [
         + [Vector(i * PHI, 0, j / PHI) for i in [-1, 1] for j in [-1, 1]]
     )
 ]
+
+top_vertex_tetrahedron = 0
+axes_tetrahedron_joint = [Line(tetrahedron_vertices[0], tetrahedron_vertices[i]).to_axis() for i in (1,2,3) ]
+
+
 top_vertex_icosahedron = 3
 axes_icosahedron_joint = [
     Line(
@@ -75,6 +88,13 @@ def create_hollow_cylinder(
 
 dodecahedron_joint: Part = Part()
 icosahedron_joint: Part = Part()
+tetrahedron_joint: Part = Part()
+
+for axis in axes_tetrahedron_joint:
+    tetrahedron_joint += create_hollow_cylinder(
+        axis, rotation=(0, 0, 30.0)
+    ) + Location((0, 0, 1.93)) * Cylinder(2.3, 2.3)
+
 
 for axis in axes_dodecahedron_joint:
     dodecahedron_joint += create_hollow_cylinder(
@@ -91,6 +111,7 @@ if __name__ == "__main__":
     # export results
     export_step(dodecahedron_joint, "dodecahedron_joint.step")
     export_step(icosahedron_joint, "icosahedron_joint.step")
+    export_step(tetrahedron_joint, "tetrahedron_joint.step")
 
     # run the server:
     # python -m ocp_vscode
