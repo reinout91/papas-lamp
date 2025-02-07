@@ -8,7 +8,6 @@ from build123d import (
     Location,
     Part,
     Vector,
-    Plane,
     export_step,
     objects_part,
 )
@@ -24,13 +23,43 @@ BOTTOM_ALIGN = (Align.CENTER, Align.CENTER, Align.MIN)
 
 icosahedron_xob = asin(1 / sqrt(PHI**2 + 1)) * (180 / pi)
 dodecahedron_xob = acos(-(sqrt(3) + sqrt(15)) / 6) * (180 / pi) - 180
-tetrahedron_xob = atan(sqrt(2)) * 180/pi
+tetrahedron_and_cube_xob = atan(sqrt(2)) * 180 / pi
 
-tetrahedron_vertices = [vert.rotate(Axis((0,0,0),(1,-1,0)), tetrahedron_xob)for vert in (Vector(1, 1, 1),
-                                                                          Vector(1, -1, -1),
-                                                                          Vector(-1, 1, -1),
-                                                                          Vector(-1, -1, 1)
-                                                                          )]
+octahedron_vertices = (
+    [Vector(i, 0, 0) for i in [-1, 1]]
+    + [Vector(0, i, 0) for i in [-1, 1]]
+    + [Vector(0, 0, i) for i in [-1, 1]]
+)
+
+top_vertex_octahedron_joint = 5
+axes_octahedron_joint = [
+    Line(
+        octahedron_vertices[top_vertex_octahedron_joint], octahedron_vertices[i]
+    ).to_axis()
+    for i in (0, 1, 2, 3)
+]
+
+
+cube_vertices = [
+    vert.rotate(Axis((0, 0, 0), (1, 1, 0)), tetrahedron_and_cube_xob)
+    for vert in (Vector(i, j, k) for i in [-1, 1] for j in [-1, 1] for k in [-1, 1])
+]
+
+top_vertex_cube = 3
+axes_cube_joint = [
+    Line(cube_vertices[top_vertex_cube], cube_vertices[i]).to_axis() for i in (1, 2, 7)
+]
+
+
+tetrahedron_vertices = [
+    vert.rotate(Axis((0, 0, 0), (1, -1, 0)), tetrahedron_and_cube_xob)
+    for vert in (
+        Vector(1, 1, 1),
+        Vector(1, -1, -1),
+        Vector(-1, 1, -1),
+        Vector(-1, -1, 1),
+    )
+]
 
 icosahedron_vertices = [
     vert.rotate(Axis.X, icosahedron_xob)
@@ -52,7 +81,9 @@ dodecahedron_vertices = [
 ]
 
 top_vertex_tetrahedron = 0
-axes_tetrahedron_joint = [Line(tetrahedron_vertices[0], tetrahedron_vertices[i]).to_axis() for i in (1,2,3) ]
+axes_tetrahedron_joint = [
+    Line(tetrahedron_vertices[0], tetrahedron_vertices[i]).to_axis() for i in (1, 2, 3)
+]
 
 
 top_vertex_icosahedron = 3
@@ -73,7 +104,7 @@ axes_dodecahedron_joint = [
 ]
 
 
-# Function to create a hollow cylinder along a plane
+# # Function to create a hollow cylinder along a plane
 def create_hollow_cylinder(
     axis: Axis, rotation: tuple[float, float, float]
 ) -> objects_part:
@@ -86,14 +117,26 @@ def create_hollow_cylinder(
     )
 
 
-dodecahedron_joint: Part = Part()
-icosahedron_joint: Part = Part()
-tetrahedron_joint: Part = Part()
+dodecahedron_joint: Part = Part(label="dodecahedron_joint")
+icosahedron_joint: Part = Part(label="icosahedron_joint")
+tetrahedron_joint: Part = Part(label="tetrahedron_joint")
+cube_joint: Part = Part(label="cube_joint")
+octahedron_joint: Part = Part(label="octahedron_joint")
+
+for axis in axes_octahedron_joint:
+    octahedron_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
+        (0, 0, 1.93)
+    ) * Cylinder(1.9, 1.4)
+
+for axis in axes_cube_joint:
+    cube_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
+        (0, 0, 1.93)
+    ) * Cylinder(1.9, 4)
 
 for axis in axes_tetrahedron_joint:
-    tetrahedron_joint += create_hollow_cylinder(
-        axis, rotation=(0, 0, 30.0)
-    ) + Location((0, 0, 1.93)) * Cylinder(2.3, 2.3)
+    tetrahedron_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
+        (0, 0, 1.93)
+    ) * Cylinder(1.9, 2.3)
 
 
 for axis in axes_dodecahedron_joint:
@@ -109,12 +152,19 @@ for axis in axes_icosahedron_joint:
 # Visualization
 if __name__ == "__main__":
     # export results
-    export_step(dodecahedron_joint, "dodecahedron_joint.step")
-    export_step(icosahedron_joint, "icosahedron_joint.step")
-    export_step(tetrahedron_joint, "tetrahedron_joint.step")
 
+    platonic_solid_joints = [
+        dodecahedron_joint,
+        icosahedron_joint,
+        tetrahedron_joint,
+        cube_joint,
+        octahedron_joint,
+    ]
+    [export_step(shape, f"{shape.label}.step") for shape in platonic_solid_joints]
     # run the server:
     # python -m ocp_vscode
 
     set_port(3939)
-    show_all(reset_camera=Camera.KEEP)
+    show_all(
+        reset_camera=Camera.KEEP,
+    )
