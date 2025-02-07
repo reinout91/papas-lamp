@@ -21,10 +21,25 @@ OFFSET = 3.6
 OFFSET_LOCATION = Location((0, 0, OFFSET))
 BOTTOM_ALIGN = (Align.CENTER, Align.CENTER, Align.MIN)
 
-icosahedron_xob = asin(1 / sqrt(PHI**2 + 1)) * (180 / pi)
-dodecahedron_xob = acos(-(sqrt(3) + sqrt(15)) / 6) * (180 / pi) - 180
-tetrahedron_and_cube_xob = atan(sqrt(2)) * 180 / pi
+ICOSAHEDRON_XOB = asin(1 / sqrt(PHI**2 + 1)) * (180 / pi)
+DODECAHEDERON_XOB = acos(-(sqrt(3) + sqrt(15)) / 6) * (180 / pi) - 180
+TETRAHEDRON_AND_CUBE_XOB = atan(sqrt(2)) * 180 / pi
 
+
+def create_hollow_cylinder(
+    axis: Axis, rotation: tuple[float, float, float]
+) -> objects_part:
+    return axis.to_plane() * (
+        Cylinder(R_OUT, CYLINDER_LENGTH, align=BOTTOM_ALIGN, rotation=rotation)
+        - OFFSET_LOCATION
+        * Cylinder(
+            R_IN, CYLINDER_LENGTH - OFFSET, align=BOTTOM_ALIGN, rotation=rotation
+        )
+    )
+
+
+# %% OCTAHEDRON
+octahedron_joint: Part = Part(label="octahedron_joint")
 octahedron_vertices = (
     [Vector(i, 0, 0) for i in [-1, 1]]
     + [Vector(0, i, 0) for i in [-1, 1]]
@@ -39,9 +54,15 @@ axes_octahedron_joint = [
     for i in (0, 1, 2, 3)
 ]
 
+for axis in axes_octahedron_joint:
+    octahedron_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
+        (0, 0, 1.93)
+    ) * Cylinder(1.9, 1.4)
 
+# %% CUBE
+cube_joint: Part = Part(label="cube_joint")
 cube_vertices = [
-    vert.rotate(Axis((0, 0, 0), (1, 1, 0)), tetrahedron_and_cube_xob)
+    vert.rotate(Axis((0, 0, 0), (1, 1, 0)), TETRAHEDRON_AND_CUBE_XOB)
     for vert in (Vector(i, j, k) for i in [-1, 1] for j in [-1, 1] for k in [-1, 1])
 ]
 
@@ -50,9 +71,15 @@ axes_cube_joint = [
     Line(cube_vertices[top_vertex_cube], cube_vertices[i]).to_axis() for i in (1, 2, 7)
 ]
 
+for axis in axes_cube_joint:
+    cube_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
+        (0, 0, 1.93)
+    ) * Cylinder(1.9, 4)
 
+# %% TETRAHEDRON
+tetrahedron_joint: Part = Part(label="tetrahedron_joint")
 tetrahedron_vertices = [
-    vert.rotate(Axis((0, 0, 0), (1, -1, 0)), tetrahedron_and_cube_xob)
+    vert.rotate(Axis((0, 0, 0), (1, -1, 0)), TETRAHEDRON_AND_CUBE_XOB)
     for vert in (
         Vector(1, 1, 1),
         Vector(1, -1, -1),
@@ -61,30 +88,27 @@ tetrahedron_vertices = [
     )
 ]
 
+top_vertex_tetrahedron = 0
+axes_tetrahedron_joint = [
+    Line(tetrahedron_vertices[0], tetrahedron_vertices[i]).to_axis() for i in (1, 2, 3)
+]
+
+for axis in axes_tetrahedron_joint:
+    tetrahedron_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
+        (0, 0, 1.93)
+    ) * Cylinder(1.9, 2.3)
+
+
+# %% ICOSAHEDRON
+icosahedron_joint: Part = Part(label="icosahedron_joint")
 icosahedron_vertices = [
-    vert.rotate(Axis.X, icosahedron_xob)
+    vert.rotate(Axis.X, ICOSAHEDRON_XOB)
     for vert in (
         [Vector(0, i, j * PHI) for i in [-1, 1] for j in [-1, 1]]
         + [Vector(i, j * PHI, 0) for i in [-1, 1] for j in [-1, 1]]
         + [Vector(i * PHI, 0, j) for i in [-1, 1] for j in [-1, 1]]
     )
 ]
-
-dodecahedron_vertices = [
-    vert.rotate(Axis.X, dodecahedron_xob)
-    for vert in (
-        [Vector(i, j, k) for i in [-1, 1] for j in [-1, 1] for k in [-1, 1]]
-        + [Vector(0, i / PHI, j * PHI) for i in [-1, 1] for j in [-1, 1]]
-        + [Vector(i / PHI, j * PHI, 0) for i in [-1, 1] for j in [-1, 1]]
-        + [Vector(i * PHI, 0, j / PHI) for i in [-1, 1] for j in [-1, 1]]
-    )
-]
-
-top_vertex_tetrahedron = 0
-axes_tetrahedron_joint = [
-    Line(tetrahedron_vertices[0], tetrahedron_vertices[i]).to_axis() for i in (1, 2, 3)
-]
-
 
 top_vertex_icosahedron = 3
 axes_icosahedron_joint = [
@@ -95,6 +119,23 @@ axes_icosahedron_joint = [
     if i != top_vertex_icosahedron
 ]
 
+for axis in axes_icosahedron_joint:
+    icosahedron_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30)) + Location(
+        (0, 0, 1.93)
+    ) * Cylinder(1.3, 4)
+
+# %% DODECAHEDRON
+dodecahedron_joint: Part = Part(label="dodecahedron_joint")
+dodecahedron_vertices = [
+    vert.rotate(Axis.X, DODECAHEDERON_XOB)
+    for vert in (
+        [Vector(i, j, k) for i in [-1, 1] for j in [-1, 1] for k in [-1, 1]]
+        + [Vector(0, i / PHI, j * PHI) for i in [-1, 1] for j in [-1, 1]]
+        + [Vector(i / PHI, j * PHI, 0) for i in [-1, 1] for j in [-1, 1]]
+        + [Vector(i * PHI, 0, j / PHI) for i in [-1, 1] for j in [-1, 1]]
+    )
+]
+
 top_vertex_dodecahedron = 9
 axes_dodecahedron_joint = [
     Line(
@@ -103,53 +144,12 @@ axes_dodecahedron_joint = [
     for i in (1, 5, 11)
 ]
 
-
-# # Function to create a hollow cylinder along a plane
-def create_hollow_cylinder(
-    axis: Axis, rotation: tuple[float, float, float]
-) -> objects_part:
-    return axis.to_plane() * (
-        Cylinder(R_OUT, CYLINDER_LENGTH, align=BOTTOM_ALIGN, rotation=rotation)
-        - OFFSET_LOCATION
-        * Cylinder(
-            R_IN, CYLINDER_LENGTH - OFFSET, align=BOTTOM_ALIGN, rotation=rotation
-        )
-    )
-
-
-dodecahedron_joint: Part = Part(label="dodecahedron_joint")
-icosahedron_joint: Part = Part(label="icosahedron_joint")
-tetrahedron_joint: Part = Part(label="tetrahedron_joint")
-cube_joint: Part = Part(label="cube_joint")
-octahedron_joint: Part = Part(label="octahedron_joint")
-
-for axis in axes_octahedron_joint:
-    octahedron_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
-        (0, 0, 1.93)
-    ) * Cylinder(1.9, 1.4)
-
-for axis in axes_cube_joint:
-    cube_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
-        (0, 0, 1.93)
-    ) * Cylinder(1.9, 4)
-
-for axis in axes_tetrahedron_joint:
-    tetrahedron_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30.0)) + Location(
-        (0, 0, 1.93)
-    ) * Cylinder(1.9, 2.3)
-
-
 for axis in axes_dodecahedron_joint:
     dodecahedron_joint += create_hollow_cylinder(
         axis, rotation=(0, 0, 30.0)
     ) + Location((0, 0, 1.93)) * Cylinder(1.3, 4)
 
-for axis in axes_icosahedron_joint:
-    icosahedron_joint += create_hollow_cylinder(axis, rotation=(0, 0, 30)) + Location(
-        (0, 0, 1.93)
-    ) * Cylinder(1.3, 4)
 
-# Visualization
 if __name__ == "__main__":
     # export results
 
@@ -160,7 +160,13 @@ if __name__ == "__main__":
         cube_joint,
         octahedron_joint,
     ]
-    [export_step(shape, f"{shape.label}.step") for shape in platonic_solid_joints]
+    [
+        export_step(shape.rotate(Axis.X, 180), f"{shape.label}.step")
+        for shape in platonic_solid_joints
+    ]
+
+    # Visualization
+
     # run the server:
     # python -m ocp_vscode
 
